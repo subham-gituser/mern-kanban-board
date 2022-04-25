@@ -1,40 +1,11 @@
-import { useState, useContext } from 'react';
+import { useContext } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { Types } from 'mongoose';
-import MiniLoader from '../components/MiniLoader';
+
 import { AuthContext } from '../config/Auth';
-import api from '../config/axiosConfig';
 import { ReactComponent as BoardImg } from '../assets/boardplanner.svg';
 
 const LandingPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-  const { user, setUser } = useContext(AuthContext);
-
-  const handleGuestLogin = async () => {
-    setIsLoading(true);
-
-    try {
-      const { data } = await api.post('auth/login/guest', {
-        email: `${Types.ObjectId().toHexString()}@mail.com`,
-        password: '123456781',
-      });
-
-      if (!data) {
-        setIsLoading(false);
-        setErrorMsg('Oops, something went wrong...');
-        return;
-      }
-
-      if (data.username) {
-        setIsLoading(false);
-        setUser(() => data);
-      }
-    } catch (error) {
-      console.log(error);
-      setErrorMsg('Oops, something went wrong...');
-    }
-  };
+  const { user } = useContext(AuthContext);
 
   if (user) {
     return <Navigate to={`/${user.username}`} />;
@@ -72,16 +43,6 @@ const LandingPage = () => {
           <p className='text-2xl pb-4 leading-8 text-center text-gray-500 lg:text-left'>
             Plan, track and organize your dream projects or everyday tasks.
           </p>
-          <div className='mt-8 mb-2 flex items-center text-center text-xl'>
-            <button
-              onClick={() => handleGuestLogin()}
-              aria-label='Continue as a guest user button'
-              className='bg-blue-600 text-white py-3 px-8 shadow-xl font-medium rounded-sm 
-              hover:bg-blue-700 hover:shadow-xl transition-all duration-150 w-full h-14 lg:w-1/2 whitespace-nowrap'>
-              {isLoading ? <MiniLoader /> : <span>Try It Out</span>}
-            </button>
-          </div>
-          {errorMsg && <p className='text-red-600'>{errorMsg}</p>}
         </div>
 
         <div className='w-full h-full md:max-w-xl lg:max-w-full lg:ml-4'>
